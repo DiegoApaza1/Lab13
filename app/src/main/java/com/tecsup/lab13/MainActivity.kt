@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.tecsup.lab13.ui.theme.Lab13Theme
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -19,15 +21,20 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,12 +43,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AnimateSizeAndPositionExample()
+            AnimatedContentExample()
         }
     }
 }
@@ -130,4 +139,54 @@ fun AnimateSizeAndPositionExample() {
         }
     }
 }
+//Ejercicio 4
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun AnimatedContentExample() {
+    var state by remember { mutableStateOf(0) }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        AnimatedContent(
+            targetState = state,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(300)) with fadeOut(animationSpec = tween(300))
+            }
+        ) { targetState ->
+            when (targetState) {
+                0 -> Text("Hola :D", fontSize = 24.sp)
+                1 -> Text("Cargando...", fontSize = 24.sp)
+                2 -> Text("TECSUP", fontSize = 24.sp)
+                3 -> Text("Eliminando...", fontSize = 24.sp)
+                4 -> Text("Eliminado correctamente", fontSize = 24.sp)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row {
+            Button(onClick = { state = 1 }) { Text("Mostrar Contenido") }
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = { state = 3 }) { Text("Eliminar") }
+        }
+        Row {
+            Spacer(modifier = Modifier.heightIn(50.dp))
+            Button(onClick = { state = 0 }) { Text("Inicio") }
+        }
+    }
+    LaunchedEffect(key1 = state) {
+        if (state == 1) {
+            delay(3000) // Simula la carga durante 3 segundos
+            state = 2 // Cambia al estado de contenido
+        }
+        if (state == 3) {
+            delay(3000) // Simula la carga durante 3 segundos
+            state = 4 // Cambia al estado de contenido
+        }
+    }
+}
+
 

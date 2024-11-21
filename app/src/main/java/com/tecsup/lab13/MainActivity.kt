@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.tecsup.lab13.ui.theme.Lab13Theme
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.runtime.getValue
@@ -39,7 +41,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AnimateColorExample()
+            AnimateSizeAndPositionExample()
         }
     }
 }
@@ -99,6 +101,32 @@ fun AnimateColorExample() {
 
         Button(onClick = { isBlue = !isBlue }) {
             Text("Cambiar Color")
+        }
+    }
+}
+//Ejercicio 3
+@Composable
+fun AnimateSizeAndPositionExample() {
+    var isMoved by remember { mutableStateOf(false) }
+    val size by animateDpAsState(targetValue = if (isMoved) 150.dp else 100.dp)
+    val offset by animateDpAsState(targetValue = if (isMoved) 100.dp else 0.dp)
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(size)
+                .offset(x = offset, y = offset)
+                .background(Color.Magenta)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { isMoved = !isMoved }) {
+            Text("Mover y Cambiar Tamaño")
         }
     }
 }

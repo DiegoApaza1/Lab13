@@ -37,9 +37,20 @@ android {
     buildFeatures {
         compose = true
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.0"
+    }
+
 }
 
 dependencies {
+    //Dependencias necesarias para animaciones
+
+    implementation ("androidx.compose.ui:ui:1.5.0")
+    implementation ("androidx.compose.material:material:1.5.0")
+    implementation ("androidx.compose.animation:animation:1.5.0")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

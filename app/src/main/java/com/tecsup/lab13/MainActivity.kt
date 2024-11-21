@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.tecsup.lab13.ui.theme.Lab13Theme
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -37,12 +39,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AnimatedVisibilityExample()
+            AnimateColorExample()
         }
     }
 }
 
-
+//Ejercicio 1
 @Composable
 fun AnimatedVisibilityExample() {
     var visible by remember { mutableStateOf(true) }
@@ -71,3 +73,33 @@ fun AnimatedVisibilityExample() {
         }
     }
 }
+
+//Ejercicio 2
+
+@Composable
+fun AnimateColorExample() {
+    var isBlue by remember { mutableStateOf(true) }
+    val color by animateColorAsState(
+        targetValue = if (isBlue) Color.Blue else Color.Green,
+        animationSpec = tween(durationMillis = 1000)
+    )
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .background(color)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { isBlue = !isBlue }) {
+            Text("Cambiar Color")
+        }
+    }
+}
+

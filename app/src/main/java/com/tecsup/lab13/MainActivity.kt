@@ -23,6 +23,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,7 +51,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AnimatedContentExample()
+            CombinedAnimationsExample()
         }
     }
 }
@@ -188,5 +189,85 @@ fun AnimatedContentExample() {
         }
     }
 }
+
+//Ejercicio Final
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun CombinedAnimationsExample() {
+    var isExpanded by remember { mutableStateOf(false) }
+    var isVisible by remember { mutableStateOf(true) }
+    var isDarkMode by remember { mutableStateOf(false) }
+
+    // Animaciones combinadas
+    val size by animateDpAsState(targetValue = if (isExpanded) 200.dp else 100.dp)
+    val color by animateColorAsState(
+        targetValue = if (isDarkMode) Color.Black else Color.White,
+        animationSpec = tween(durationMillis = 1000)
+    )
+    val offset by animateDpAsState(targetValue = if (!isVisible) 200.dp else 0.dp)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Elemento que cambia de tamaño y color
+        Box(
+            modifier = Modifier
+                .size(size)
+                .background(if (isDarkMode) Color.Gray else Color.Cyan)
+                .clickable { isExpanded = !isExpanded }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón que se desplaza y desaparece
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = fadeIn() + slideInVertically(),
+            exit = fadeOut() + slideOutVertically()
+        ) {
+            Button(
+                onClick = { isVisible = false },
+                modifier = Modifier.offset(y = offset)
+            ) {
+                Text("Desaparecer")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Transición de contenido para modo claro/oscuro
+        AnimatedContent(
+            targetState = isDarkMode,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(300)) with fadeOut(animationSpec = tween(300))
+            }
+        ) { darkMode ->
+            Text(
+                text = if (darkMode) "Modo Oscuro Activado" else "Modo Claro Activado",
+                color = if (darkMode) Color.White else Color.Black,
+                fontSize = 18.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row {
+            Button(onClick = { isDarkMode = !isDarkMode }) {
+                Text(if (isDarkMode) "Modo Claro" else "Modo Oscuro")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = { isVisible = true }) {
+                Text("Reaparecer")
+            }
+        }
+    }
+}
+
 
 
